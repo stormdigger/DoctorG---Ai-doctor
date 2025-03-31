@@ -11,6 +11,7 @@ RUN apt update && apt install -y portaudio19-dev
 COPY . /app/
 
 # Install Python dependencies
+RUN pip install --no-cache-dir Flask
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Set the default command
