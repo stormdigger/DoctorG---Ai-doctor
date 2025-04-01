@@ -30,7 +30,7 @@ def text_to_speech_with_elevenlabs_old(input_text, output_filepath):
     client=ElevenLabs(api_key=ELEVENLABS_API_KEY)
     audio=client.generate(
         text= input_text,
-        voice= "Marshal - Grumpy Sourpuss",
+        voice= "Ana-Rita3",
         output_format= "mp3_22050_32",
         model= "eleven_turbo_v2"
     )
@@ -74,7 +74,7 @@ def text_to_speech_with_elevenlabs(input_text, output_filepath):
     client=ElevenLabs(api_key=ELEVENLABS_API_KEY)
     audio=client.generate(
         text= input_text,
-        voice= "Marshal - Grumpy Sourpuss",
+        voice= "Ana-Rita3",
         output_format= "mp3_22050_32",
         model= "eleven_turbo_v2"
     )
