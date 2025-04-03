@@ -629,106 +629,14 @@
         justify-content: center;
     }
 }
-:root {
-    --loader-size: 2.5em;
-    --loader-thickness: 0.5em;
-    --loader-lat: calc((var(--loader-size) - var(--loader-thickness)) / 2);
-    --loader-offset: calc(var(--loader-lat) - var(--loader-thickness));
-    --loader-color1: hsla(337, 84%, 48%, 0.75);
-    --loader-color2: hsla(160, 50%, 48%, 0.75);
-    --loader-color3: hsla(190, 61%, 65%, 0.75);
-    --loader-color4: hsla(41, 82%, 52%, 0.75);
-  }
-
-  /* Loader Styling */
-  .custom-rotating-loader {
-    position: relative;
-    width: var(--loader-size);
-    height: var(--loader-size);
-    transform: rotate(165deg);
-  }
-  
-  .custom-rotating-loader:before,
-  .custom-rotating-loader:after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    display: block;
-    width: var(--loader-thickness);
-    height: var(--loader-thickness);
-    border-radius: calc(var(--loader-thickness) / 2);
-    transform: translate(-50%, -50%);
-  }
-  
-  .custom-rotating-loader:before {
-    animation: custom-loader-before 2s infinite;
-  }
-  
-  .custom-rotating-loader:after {
-    animation: custom-loader-after 2s infinite;
-  }
-
-  /* Loader Animations */
-  @keyframes custom-loader-before {
-    0% {
-      width: var(--loader-thickness);
-      box-shadow:
-        var(--loader-lat) calc(-1 * var(--loader-offset)) var(--loader-color1),
-        calc(-1 * var(--loader-lat)) var(--loader-offset) var(--loader-color3);
-    }
-    35% {
-      width: var(--loader-size);
-      box-shadow:
-        0 calc(-1 * var(--loader-offset)) var(--loader-color1),
-        0 var(--loader-offset) var(--loader-color3);
-    }
-    70% {
-      width: var(--loader-thickness);
-      box-shadow:
-        calc(-1 * var(--loader-lat)) calc(-1 * var(--loader-offset)) var(--loader-color1),
-        var(--loader-lat) var(--loader-offset) var(--loader-color3);
-    }
-    100% {
-      box-shadow:
-        var(--loader-lat) calc(-1 * var(--loader-offset)) var(--loader-color1),
-        calc(-1 * var(--loader-lat)) var(--loader-offset) var(--loader-color3);
-    }
-  }
-
-  @keyframes custom-loader-after {
-    0% {
-      height: var(--loader-thickness);
-      box-shadow:
-        var(--loader-offset) var(--loader-lat) var(--loader-color2),
-        calc(-1 * var(--loader-offset)) calc(-1 * var(--loader-lat)) var(--loader-color4);
-    }
-    35% {
-      height: var(--loader-size);
-      box-shadow:
-        var(--loader-offset) 0 var(--loader-color2),
-        calc(-1 * var(--loader-offset)) 0 var(--loader-color4);
-    }
-    70% {
-      height: var(--loader-thickness);
-      box-shadow:
-        var(--loader-offset) calc(-1 * var(--loader-lat)) var(--loader-color2),
-        calc(-1 * var(--loader-offset)) var(--loader-lat) var(--loader-color4);
-    }
-    100% {
-      box-shadow:
-        var(--loader-offset) var(--loader-lat) var(--loader-color2),
-        calc(-1 * var(--loader-offset)) calc(-1 * var(--loader-lat)) var(--loader-color4);
-    }
-  }
     </style>
 </head>
 
 <body>
-<!--     <div class="loader">
+    <div class="loader">
         <div class="spinner"></div>
-    </div> -->
-    <div class="custom-rotating-loader"></div>
+    </div>
+<!--     <div class="custom-rotating-loader"></div> -->
 
     <header>
         <div class="container">
