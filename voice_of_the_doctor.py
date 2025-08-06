@@ -1,50 +1,106 @@
-import os
-from elevenlabs import generate, save, set_api_key
+# if you dont use pipenv uncomment the following:
+# from dotenv import load_dotenv
+# load_dotenv()
 
-# Set the API key globally (recommended approach)
+#Step1a: Setup Text to Speech–TTS–model with gTTS
+import os
+from gtts import gTTS
+
+def text_to_speech_with_gtts_old(input_text, output_filepath):
+    language="en"
+
+    audioobj= gTTS(
+        text=input_text,
+        lang=language,
+        slow=False
+    )
+    audioobj.save(output_filepath)
+
+
+input_text="Hi this is Ai with Hassan!"
+text_to_speech_with_gtts_old(input_text=input_text, output_filepath="gtts_testing.mp3")
+
+#Step1b: Setup Text to Speech–TTS–model with ElevenLabs
+import elevenlabs
+from elevenlabs.client import ElevenLabs
+
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY")
-if ELEVENLABS_API_KEY:
-    set_api_key(ELEVENLABS_API_KEY)
 
 def text_to_speech_with_elevenlabs_old(input_text, output_filepath):
     if not ELEVENLABS_API_KEY:
         raise ValueError("ELEVENLABS_API_KEY environment variable is not set!")
     
     try:
-        # Use the direct generate function (most reliable)
-        audio = generate(
+        client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
+        
+        # Use the client's generate method
+        audio = client.generate(
             text=input_text,
-            voice="dPKFsZN0BnPRUfVI2DUW",  # This should work with voice ID
+            voice="dPKFsZN0BnPRUfVI2DUW",
             model="eleven_turbo_v2"
         )
         
-        # Save the audio
-        save(audio, output_filepath)
+        # Use elevenlabs.save from the module
+        elevenlabs.save(audio, output_filepath)
         print(f"Audio saved successfully to {output_filepath}")
         
     except Exception as e:
         print(f"ElevenLabs API error: {e}")
         raise
 
+#text_to_speech_with_elevenlabs_old(input_text, output_filepath="elevenlabs_testing.mp3") 
+
+#Step2: Use Model for Text output to Voice
+
+import subprocess
+import platform
+
+def text_to_speech_with_gtts(input_text, output_filepath):
+    language="en"
+
+    audioobj= gTTS(
+        text=input_text,
+        lang=language,
+        slow=False
+    )
+    audioobj.save(output_filepath)
+    os_name = platform.system()
+    try:
+        if os_name == "Darwin":  # macOS
+            subprocess.run(['afplay', output_filepath])
+        elif os_name == "Windows":  # Windows
+            subprocess.run(['powershell', '-c', f'(New-Object Media.SoundPlayer "{output_filepath}").PlaySync();'])
+        elif os_name == "Linux":  # Linux
+            subprocess.run(['aplay', output_filepath])  # Alternative: use 'mpg123' or 'ffplay'
+        else:
+            raise OSError("Unsupported operating system")
+    except Exception as e:
+        print(f"An error occurred while trying to play the audio: {e}")
+
+
+input_text="Hi this is Ai with Hassan, autoplay testing!"
+#text_to_speech_with_gtts(input_text=input_text, output_filepath="gtts_testing_autoplay.mp3")
+
+
 def text_to_speech_with_elevenlabs(input_text, output_filepath):
     if not ELEVENLABS_API_KEY:
         raise ValueError("ELEVENLABS_API_KEY environment variable is not set!")
     
     try:
-        # Use the direct generate function
-        audio = generate(
+        client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
+        
+        # Generate audio using the client
+        audio = client.generate(
             text=input_text,
             voice="dPKFsZN0BnPRUfVI2DUW",
             model="eleven_turbo_v2"
         )
         
-        # Save the audio file
-        save(audio, output_filepath)
+        # Save the audio file using elevenlabs.save
+        elevenlabs.save(audio, output_filepath)
         print(f"Audio generated and saved to {output_filepath}")
         
-        # Play audio code (your existing code)
-        import subprocess
-        import platform
+        # Play audio code
         os_name = platform.system()
         try:
             if os_name == "Darwin":  # macOS
@@ -61,3 +117,5 @@ def text_to_speech_with_elevenlabs(input_text, output_filepath):
     except Exception as e:
         print(f"ElevenLabs API error: {e}")
         raise
+
+#text_to_speech_with_elevenlabs(input_text, output_filepath="elevenlabs_testing_autoplay.mp3")
