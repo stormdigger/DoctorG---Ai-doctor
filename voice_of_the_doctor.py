@@ -1,114 +1,50 @@
-# if you dont use pipenv uncomment the following:
-# from dotenv import load_dotenv
-# load_dotenv()
-
-#Step1a: Setup Text to Speech–TTS–model with gTTS
 import os
-from gtts import gTTS
+from elevenlabs import generate, save, set_api_key
 
-def text_to_speech_with_gtts_old(input_text, output_filepath):
-    language="en"
-
-    audioobj= gTTS(
-        text=input_text,
-        lang=language,
-        slow=False
-    )
-    audioobj.save(output_filepath)
-
-
-input_text="Hi this is Ai with Hassan!"
-text_to_speech_with_gtts_old(input_text=input_text, output_filepath="gtts_testing.mp3")
-
-#Step1b: Setup Text to Speech–TTS–model with ElevenLabs
-import elevenlabs
-from elevenlabs.client import ElevenLabs
-
+# Set the API key globally (recommended approach)
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY")
+if ELEVENLABS_API_KEY:
+    set_api_key(ELEVENLABS_API_KEY)
 
 def text_to_speech_with_elevenlabs_old(input_text, output_filepath):
-    # Validate API key exists
     if not ELEVENLABS_API_KEY:
         raise ValueError("ELEVENLABS_API_KEY environment variable is not set!")
     
     try:
-        client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
-        
-        # Use the correct method - it's client.generate() for newer versions
-        audio = client.generate(
+        # Use the direct generate function (most reliable)
+        audio = generate(
             text=input_text,
-            voice="dPKFsZN0BnPRUfVI2DUW",  # Use 'voice' not 'voice_id' for newer SDK
-            output_format="mp3_22050_32",
+            voice="dPKFsZN0BnPRUfVI2DUW",  # This should work with voice ID
             model="eleven_turbo_v2"
         )
         
-        # Save the audio - use the save function from elevenlabs module
-        elevenlabs.save(audio, output_filepath)
+        # Save the audio
+        save(audio, output_filepath)
         print(f"Audio saved successfully to {output_filepath}")
         
     except Exception as e:
         print(f"ElevenLabs API error: {e}")
-        # Print more details about the error
-        if hasattr(e, 'response'):
-            print(f"Response status: {e.response.status_code}")
-            print(f"Response text: {e.response.text}")
         raise
 
-#text_to_speech_with_elevenlabs_old(input_text, output_filepath="elevenlabs_testing.mp3") 
-
-#Step2: Use Model for Text output to Voice
-
-import subprocess
-import platform
-
-def text_to_speech_with_gtts(input_text, output_filepath):
-    language="en"
-
-    audioobj= gTTS(
-        text=input_text,
-        lang=language,
-        slow=False
-    )
-    audioobj.save(output_filepath)
-    os_name = platform.system()
-    try:
-        if os_name == "Darwin":  # macOS
-            subprocess.run(['afplay', output_filepath])
-        elif os_name == "Windows":  # Windows
-            subprocess.run(['powershell', '-c', f'(New-Object Media.SoundPlayer "{output_filepath}").PlaySync();'])
-        elif os_name == "Linux":  # Linux
-            subprocess.run(['aplay', output_filepath])  # Alternative: use 'mpg123' or 'ffplay'
-        else:
-            raise OSError("Unsupported operating system")
-    except Exception as e:
-        print(f"An error occurred while trying to play the audio: {e}")
-
-
-input_text="Hi this is Ai with Hassan, autoplay testing!"
-#text_to_speech_with_gtts(input_text=input_text, output_filepath="gtts_testing_autoplay.mp3")
-
-
 def text_to_speech_with_elevenlabs(input_text, output_filepath):
-    # Validate API key exists
     if not ELEVENLABS_API_KEY:
         raise ValueError("ELEVENLABS_API_KEY environment variable is not set!")
     
     try:
-        client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
-        
-        # Generate audio with proper parameter names
-        audio = client.generate(
+        # Use the direct generate function
+        audio = generate(
             text=input_text,
-            voice="dPKFsZN0BnPRUfVI2DUW",  # Use 'voice' parameter
-            output_format="mp3_22050_32",
+            voice="dPKFsZN0BnPRUfVI2DUW",
             model="eleven_turbo_v2"
         )
         
         # Save the audio file
-        elevenlabs.save(audio, output_filepath)
+        save(audio, output_filepath)
         print(f"Audio generated and saved to {output_filepath}")
         
-        # Play the audio file
+        # Play audio code (your existing code)
+        import subprocess
+        import platform
         os_name = platform.system()
         try:
             if os_name == "Darwin":  # macOS
@@ -116,7 +52,7 @@ def text_to_speech_with_elevenlabs(input_text, output_filepath):
             elif os_name == "Windows":  # Windows
                 subprocess.run(['powershell', '-c', f'(New-Object Media.SoundPlayer "{output_filepath}").PlaySync();'])
             elif os_name == "Linux":  # Linux
-                subprocess.run(['aplay', output_filepath])  # Alternative: use 'mpg123' or 'ffplay'
+                subprocess.run(['aplay', output_filepath])
             else:
                 raise OSError("Unsupported operating system")
         except Exception as play_error:
@@ -124,11 +60,4 @@ def text_to_speech_with_elevenlabs(input_text, output_filepath):
             
     except Exception as e:
         print(f"ElevenLabs API error: {e}")
-        # Print detailed error information
-        if hasattr(e, 'response'):
-            print(f"HTTP Status Code: {e.response.status_code}")
-            print(f"Response Headers: {e.response.headers}")
-            print(f"Response Body: {e.response.text}")
         raise
-
-#text_to_speech_with_elevenlabs(input_text, output_filepath="elevenlabs_testing_autoplay.mp3")
