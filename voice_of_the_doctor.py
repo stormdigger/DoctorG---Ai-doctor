@@ -24,17 +24,35 @@ text_to_speech_with_gtts_old(input_text=input_text, output_filepath="gtts_testin
 import elevenlabs
 from elevenlabs.client import ElevenLabs
 
-ELEVENLABS_API_KEY=os.environ.get("ELEVENLABS_API_KEY")
+ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY")
 
 def text_to_speech_with_elevenlabs_old(input_text, output_filepath):
-    client=ElevenLabs(api_key=ELEVENLABS_API_KEY)
-    audio=client.generate(
-        text= input_text,
-        voice_id= "dPKFsZN0BnPRUfVI2DUW",
-        output_format= "mp3_22050_32",
-        model= "eleven_turbo_v2"
-    )
-    elevenlabs.save(audio, output_filepath)
+    # Validate API key exists
+    if not ELEVENLABS_API_KEY:
+        raise ValueError("ELEVENLABS_API_KEY environment variable is not set!")
+    
+    try:
+        client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
+        
+        # Use the correct method - it's client.generate() for newer versions
+        audio = client.generate(
+            text=input_text,
+            voice="dPKFsZN0BnPRUfVI2DUW",  # Use 'voice' not 'voice_id' for newer SDK
+            output_format="mp3_22050_32",
+            model="eleven_turbo_v2"
+        )
+        
+        # Save the audio - use the save function from elevenlabs module
+        elevenlabs.save(audio, output_filepath)
+        print(f"Audio saved successfully to {output_filepath}")
+        
+    except Exception as e:
+        print(f"ElevenLabs API error: {e}")
+        # Print more details about the error
+        if hasattr(e, 'response'):
+            print(f"Response status: {e.response.status_code}")
+            print(f"Response text: {e.response.text}")
+        raise
 
 #text_to_speech_with_elevenlabs_old(input_text, output_filepath="elevenlabs_testing.mp3") 
 
@@ -71,25 +89,46 @@ input_text="Hi this is Ai with Hassan, autoplay testing!"
 
 
 def text_to_speech_with_elevenlabs(input_text, output_filepath):
-    client=ElevenLabs(api_key=ELEVENLABS_API_KEY)
-    audio=client.generate(
-        text= input_text,
-        voice_id= "dPKFsZN0BnPRUfVI2DUW",
-        output_format= "mp3_22050_32",
-        model= "eleven_turbo_v2"
-    )
-    elevenlabs.save(audio, output_filepath)
-    os_name = platform.system()
+    # Validate API key exists
+    if not ELEVENLABS_API_KEY:
+        raise ValueError("ELEVENLABS_API_KEY environment variable is not set!")
+    
     try:
-        if os_name == "Darwin":  # macOS
-            subprocess.run(['afplay', output_filepath])
-        elif os_name == "Windows":  # Windows
-            subprocess.run(['powershell', '-c', f'(New-Object Media.SoundPlayer "{output_filepath}").PlaySync();'])
-        elif os_name == "Linux":  # Linux
-            subprocess.run(['aplay', output_filepath])  # Alternative: use 'mpg123' or 'ffplay'
-        else:
-            raise OSError("Unsupported operating system")
+        client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
+        
+        # Generate audio with proper parameter names
+        audio = client.generate(
+            text=input_text,
+            voice="dPKFsZN0BnPRUfVI2DUW",  # Use 'voice' parameter
+            output_format="mp3_22050_32",
+            model="eleven_turbo_v2"
+        )
+        
+        # Save the audio file
+        elevenlabs.save(audio, output_filepath)
+        print(f"Audio generated and saved to {output_filepath}")
+        
+        # Play the audio file
+        os_name = platform.system()
+        try:
+            if os_name == "Darwin":  # macOS
+                subprocess.run(['afplay', output_filepath])
+            elif os_name == "Windows":  # Windows
+                subprocess.run(['powershell', '-c', f'(New-Object Media.SoundPlayer "{output_filepath}").PlaySync();'])
+            elif os_name == "Linux":  # Linux
+                subprocess.run(['aplay', output_filepath])  # Alternative: use 'mpg123' or 'ffplay'
+            else:
+                raise OSError("Unsupported operating system")
+        except Exception as play_error:
+            print(f"An error occurred while trying to play the audio: {play_error}")
+            
     except Exception as e:
-        print(f"An error occurred while trying to play the audio: {e}")
+        print(f"ElevenLabs API error: {e}")
+        # Print detailed error information
+        if hasattr(e, 'response'):
+            print(f"HTTP Status Code: {e.response.status_code}")
+            print(f"Response Headers: {e.response.headers}")
+            print(f"Response Body: {e.response.text}")
+        raise
 
 #text_to_speech_with_elevenlabs(input_text, output_filepath="elevenlabs_testing_autoplay.mp3")
