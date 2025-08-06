@@ -62,7 +62,7 @@ def process_inputs():
             doctor_response = analyze_image_with_query(
                 query=system_prompt + speech_text,
                 encoded_image=encode_image(image_file),
-                model="llama-3.2-11b-vision-preview"
+                model="meta-llama/llama-4-scout-17b-16e-instruct"
             )
         
         # Generate audio response if API key available
