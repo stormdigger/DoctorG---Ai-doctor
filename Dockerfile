@@ -1,18 +1,19 @@
-# Use official Python image
-FROM python:3.11
+FROM python:3.11-slim
 
-# Set the working directory
+# Install system dependencies
+RUN apt-get update && apt-get install -y portaudio19-dev ffmpeg
+
+# Set workdir
 WORKDIR /app
 
-# Install required system dependencies
-RUN apt update && apt install -y portaudio19-dev
-
-# Copy the project files into the container
-COPY . /app/
+# Copy all files
+COPY . .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir Flask
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
-# Set the default command
+# Optional: expose port if needed, for example
+# EXPOSE 8080
+
+# Start your app
 CMD ["python", "app.py"]
