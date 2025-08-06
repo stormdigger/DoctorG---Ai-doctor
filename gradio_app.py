@@ -19,7 +19,7 @@ def process_inputs(audio_filepath, image_filepath):
             doctor_response = analyze_image_with_query(
                 query=system_prompt + speech_text,
                 encoded_image=encode_image(image_filepath),
-                model="llama-3.2-11b-vision-preview"
+                model="meta-llama/llama-4-scout-17b-16e-instruct"
             )
         else:
             doctor_response = "Please provide a medical image for analysis"
